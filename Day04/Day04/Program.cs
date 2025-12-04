@@ -2,76 +2,72 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 string[] lines = File.ReadAllLines("../../../input.txt");
-int length = lines[0].Length;
+char[,] input = new char[lines[0].Length, lines.Length];
+WriteInputInArray();
 
-int solutionA = 0;
+int solution = 0;
 
-string last = new string('.', length);
-string actual = lines[0];
-string next = lines[1];
+CheckOneLine(0);
 
-CheckOneLine(actual);
-
-for (int i = 2; i < lines.Length + 1; i++)
+for (int y = 1; y < lines.Length; y++)
 {
-    SetNewLines(i);
-    CheckOneLine(actual);
+    CheckOneLine(y);
 }
 
-Console.WriteLine($"SolutionA: {solutionA}");
+Console.WriteLine($"Solution: {solution}");
 
-void SetNewLines(int newIndex)
+
+
+// Methods:
+
+void WriteInputInArray()
 {
-    last = actual;
-    actual = next;
-
-    if (newIndex == lines.Length)
+    for (int x = 0; x < lines[0].Length; x++)
     {
-        next = new string('.', length);
-    }
-    else
-    {
-        next = lines[newIndex];
-    }
-}
-
-void CheckOneLine(string line)
-{
-    for (int i = 0; i < line.Length; i++)
-    {
-        if (line[i] == '@')
+        for (int y = 0; y < lines.Length; y++)
         {
-            CheckOneCharacter(i);
+            input[x, y] = lines[y][x];
         }
     }
 }
 
-void CheckOneCharacter(int i)
+void CheckOneLine(int y)
 {
-    int countAdjacents = 0;
-
-    countAdjacents += CheckOnePosition(last, i - 1);
-    countAdjacents += CheckOnePosition(last, i);
-    countAdjacents += CheckOnePosition(last, i + 1);
-
-    countAdjacents += CheckOnePosition(actual, i - 1);
-    countAdjacents += CheckOnePosition(actual, i + 1);
-
-    countAdjacents += CheckOnePosition(next, i - 1);
-    countAdjacents += CheckOnePosition(next, i);
-    countAdjacents += CheckOnePosition(next, i + 1);
-
-    if (countAdjacents < 4)
+    for (int x = 0; x < input.GetLength(1); x++)
     {
-        solutionA++;
+        if (input[x, y] == '@')
+        {
+            CheckOneCharacter(x, y);
+        }
     }
 }
 
-int CheckOnePosition(string list, int index)
+void CheckOneCharacter(int x, int y)
+{
+    int countAdjacents = 0;
+
+    countAdjacents += CheckOnePosition(x - 1, y - 1);
+    countAdjacents += CheckOnePosition(x, y - 1);
+    countAdjacents += CheckOnePosition(x + 1, y - 1);
+
+    countAdjacents += CheckOnePosition(x - 1, y);
+    countAdjacents += CheckOnePosition(x + 1, y);
+
+    countAdjacents += CheckOnePosition(x - 1, y + 1);
+    countAdjacents += CheckOnePosition(x, y + 1);
+    countAdjacents += CheckOnePosition(x + 1, y + 1);
+
+    if (countAdjacents < 4)
+    {
+        solution++;
+    }
+}
+
+int CheckOnePosition(int x, int y)
 {
     try
     {
-        if (list[index] == '@')
+        if (input[x,y] == '@')
         {
             return 1;
         }
