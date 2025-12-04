@@ -2,20 +2,28 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 string[] lines = File.ReadAllLines("../../../input.txt");
-char[,] input = new char[lines[0].Length, lines.Length];
+char[,] originalArray = new char[lines[0].Length, lines.Length];
+char[,] newArray = new char[lines[0].Length, lines.Length];
 WriteInputInArray();
 
 int solution = 0;
+int removed;
 
-CheckOneLine(0);
-
-for (int y = 1; y < lines.Length; y++)
+do
 {
-    CheckOneLine(y);
-}
+    removed = 0;
+    for (int y = 0; y < lines.Length; y++)
+    {
+        CheckOneLine(originalArray, y);
+    }
+
+    Console.WriteLine(removed);
+    PrintArray(newArray);
+    solution += removed;
+    Array.Copy(newArray, originalArray, newArray.Length);
+} while (removed > 0);
 
 Console.WriteLine($"Solution: {solution}");
-
 
 
 // Methods:
@@ -26,48 +34,62 @@ void WriteInputInArray()
     {
         for (int y = 0; y < lines.Length; y++)
         {
-            input[x, y] = lines[y][x];
+            originalArray[x, y] = lines[y][x];
         }
     }
 }
 
-void CheckOneLine(int y)
+void CheckOneLine(char[,] array, int y)
 {
-    for (int x = 0; x < input.GetLength(1); x++)
+    for (int x = 0; x < array.GetLength(1); x++)
     {
-        if (input[x, y] == '@')
+        if (array[x, y] == 'x')
         {
-            CheckOneCharacter(x, y);
+            newArray[x, y] = '.';
+        }
+
+        if (array[x, y] == '@')
+        {
+            CheckOneCharacter(array, x, y);
+        }
+        else
+        {
+            newArray[x, y] = '.';
         }
     }
 }
 
-void CheckOneCharacter(int x, int y)
+void CheckOneCharacter(char[,] array, int x, int y)
 {
     int countAdjacents = 0;
 
-    countAdjacents += CheckOnePosition(x - 1, y - 1);
-    countAdjacents += CheckOnePosition(x, y - 1);
-    countAdjacents += CheckOnePosition(x + 1, y - 1);
+    countAdjacents += CheckOnePosition(array, x - 1, y - 1);
+    countAdjacents += CheckOnePosition(array, x, y - 1);
+    countAdjacents += CheckOnePosition(array, x + 1, y - 1);
 
-    countAdjacents += CheckOnePosition(x - 1, y);
-    countAdjacents += CheckOnePosition(x + 1, y);
+    countAdjacents += CheckOnePosition(array, x - 1, y);
+    countAdjacents += CheckOnePosition(array, x + 1, y);
 
-    countAdjacents += CheckOnePosition(x - 1, y + 1);
-    countAdjacents += CheckOnePosition(x, y + 1);
-    countAdjacents += CheckOnePosition(x + 1, y + 1);
+    countAdjacents += CheckOnePosition(array, x - 1, y + 1);
+    countAdjacents += CheckOnePosition(array, x, y + 1);
+    countAdjacents += CheckOnePosition(array, x + 1, y + 1);
 
     if (countAdjacents < 4)
     {
-        solution++;
+        removed++;
+        newArray[x, y] = 'x';
+    }
+    else
+    {
+        newArray[x, y] = '@';
     }
 }
 
-int CheckOnePosition(int x, int y)
+int CheckOnePosition(char[,] array, int x, int y)
 {
     try
     {
-        if (input[x,y] == '@')
+        if (array[x,y] == '@')
         {
             return 1;
         }
@@ -80,4 +102,20 @@ int CheckOnePosition(int x, int y)
     {
         return 0;
     }
+}
+
+
+void PrintArray(char[,] array)
+{
+    for (int y = 0; y < array.GetLength(1); y++)
+    {
+        for (int x = 0; x < array.GetLength(0); x++)
+        {
+            Console.Write(array[x, y]);
+        }
+
+        Console.WriteLine();
+    }
+
+    Console.WriteLine();
 }
