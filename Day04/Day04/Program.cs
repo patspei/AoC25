@@ -17,12 +17,12 @@ do
         CheckOneLine(originalArray, y);
     }
 
-    Console.WriteLine(removed);
-    PrintArray(newArray);
+    Console.WriteLine($"Removed: {removed}");
     solution += removed;
     Array.Copy(newArray, originalArray, newArray.Length);
 } while (removed > 0);
 
+PrintArray(originalArray);
 Console.WriteLine($"Solution: {solution}");
 
 
